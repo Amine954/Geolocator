@@ -1,87 +1,97 @@
-# Photo Géolocalisateur
+# GeoLocator
 
-Application Next.js qui utilise l'API Anthropic (Claude claude-sonnet-4-6 avec vision) pour analyser une photo et identifier sa localisation géographique probable.
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)
+![Status](https://img.shields.io/badge/status-experimental-orange?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
-## Fonctionnalités
+> Drop a photo. AI tells you where it was taken.
 
-- Upload par glisser-déposer ou sélection de fichier (JPG, PNG, WEBP, GIF)
-- Prévisualisation de l'image uploadée
-- Analyse par Claude AI avec retour JSON structuré :
-  - **Pays** et **ville / région** probable
-  - **Niveau de confiance** : faible / moyen / élevé
-  - **Liste des indices visuels** détectés (architecture, végétation, panneaux, véhicules, lumière…)
-- Gestion des états : chargement, erreur, résultat
+Built with Next.js 15, powered by OpenRouter AI vision models. Analyzes any image and returns the probable country, city/region, confidence level, and visual clues — with an interactive globe that zooms into the detected location.
 
-## Prérequis
+---
 
-- **Node.js 18+**
-- Une **clé API Anthropic** — obtenez-en une sur [console.anthropic.com](https://console.anthropic.com/)
+## Features
 
-## Installation
+- **Drag & drop** or click to upload — JPG, PNG, WEBP, GIF
+- **AI-powered analysis** via OpenRouter vision models
+- Returns **country**, **city/region**, **confidence level**, and **visual clues**
+- **Interactive 3D globe** that flies to the detected location
+- Clean dark UI, no signup required
 
-### 1. Installer les dépendances
+---
+
+## Stack
+
+| | |
+|---|---|
+| [Next.js 15](https://nextjs.org) | App Router, API Routes |
+| [TypeScript](https://www.typescriptlang.org) | Type safety |
+| [Tailwind CSS](https://tailwindcss.com) | Styling |
+| [MapLibre GL](https://maplibre.org) | Interactive globe |
+| [OpenRouter](https://openrouter.ai) | AI vision API |
+| [Nominatim](https://nominatim.org) | Free geocoding |
+
+---
+
+## Getting started
+
+**1. Clone and install**
 
 ```bash
+git clone https://github.com/your-username/photo-geolocator
+cd photo-geolocator
 npm install
 ```
 
-### 2. Configurer les variables d'environnement
+**2. Add your API key**
 
 ```bash
 cp .env.example .env.local
 ```
 
-Puis éditez `.env.local` et remplacez la valeur par votre clé :
+Edit `.env.local`:
 
 ```env
-ANTHROPIC_API_KEY=sk-ant-api03-...
+OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
-### 3. Lancer le serveur de développement
+Get a free key at [openrouter.ai](https://openrouter.ai).
+
+**3. Run**
 
 ```bash
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Build production
+---
 
-```bash
-npm run build
-npm run start
-```
-
-## Structure du projet
+## Project structure
 
 ```
-photo-geolocator/
 ├── app/
-│   ├── api/geolocate/route.ts   # Route API : appel Anthropic
-│   ├── globals.css               # Tailwind CSS
-│   ├── layout.tsx
-│   └── page.tsx                  # Page principale
+│   ├── api/geolocate/route.ts   # AI analysis endpoint
+│   ├── page.tsx                  # Main page
+│   └── globals.css
 ├── components/
-│   ├── DropZone.tsx              # Zone drag & drop
-│   └── ResultCard.tsx            # Affichage du résultat
-├── types/
-│   └── index.ts                  # Types TypeScript
-├── .env.example
-└── README.md
+│   ├── DropZone.tsx              # Drag & drop upload
+│   ├── GlobeView.tsx             # MapLibre GL globe
+│   └── ResultCard.tsx            # Analysis results
+└── types/
+    └── index.ts
 ```
 
-## Stack technique
+---
 
-| Outil | Rôle |
-|---|---|
-| Next.js 15 (App Router) | Framework React SSR/SSG |
-| TypeScript | Typage statique |
-| Tailwind CSS 3 | Styles utilitaires |
-| @anthropic-ai/sdk | Appel à l'API Anthropic |
-| claude-sonnet-4-6 | Modèle Claude avec vision |
+## Disclaimer
 
-## Remarques
+> **This is an experimental project built for learning purposes.**
+> Results may be inaccurate, features may break, and the AI model can be wrong — especially with free-tier vision models. Do not use this for anything critical.
 
-- La clé API reste côté serveur (route API Next.js) et n'est jamais exposée au client.
-- L'image est transmise en base64 dans le corps de la requête POST — pas de stockage fichier.
-- Le prompt demande à Claude de répondre uniquement en JSON valide. La route nettoie également les éventuels blocs markdown si Claude en insère malgré tout.
+## Notes
+
+- API key is server-side only — never exposed to the client
+- Images are sent as base64 in the POST body — no file storage
+- Geocoding via OpenStreetMap Nominatim — no API key needed
