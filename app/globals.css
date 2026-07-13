@@ -1,0 +1,30 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+/* Hide Next.js dev indicator */
+nextjs-portal {
+  display: none !important;
+}
+
+/* MapLibre dark popup */
+.maplibregl-popup-content {
+  background: #18181b !important;
+  color: #e4e4e7 !important;
+  border: 1px solid #3f3f46 !important;
+  border-radius: 2px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
+}
+.maplibregl-popup-tip {
+  border-top-color: #18181b !important;
+}
+.maplibregl-ctrl-logo, .maplibregl-ctrl-attrib {
+  display: none !important;
+}
