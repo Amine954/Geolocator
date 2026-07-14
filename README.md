@@ -17,6 +17,7 @@ Built with Next.js 15, powered by OpenRouter AI vision models. Analyzes any imag
 - **AI-powered analysis** via OpenRouter vision models
 - Returns **country**, **city/region**, **confidence level**, and **visual clues**
 - **Interactive 3D globe** that flies to the detected location
+- **Open in Google Maps** — one click to see the exact spot
 - Clean dark UI, no signup required
 
 ---
