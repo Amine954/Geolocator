@@ -6,17 +6,27 @@ interface GeolocateRequestBody {
   mediaType: string;
 }
 
-const PROMPT = `Analyse cette image attentivement et identifie sa localisation géographique probable.
+const PROMPT = `Analyse cette image attentivement et identifie sa localisation géographique avec le maximum de précision possible.
+
+Règles de précision (par ordre de priorité) :
+1. Si tu reconnais un monument ou lieu célèbre (Tour Eiffel, Big Ben, Colisée, Sagrada Familia, etc.), identifie-le précisément dans "monument" et mets "monument" dans "location_type".
+2. Sinon, essaie de donner une ville précise dans "city_or_region" et mets "city" dans "location_type".
+3. Si la ville est impossible à déterminer mais la région est identifiable, donne la région et mets "region" dans "location_type".
+
 Réponds UNIQUEMENT avec un objet JSON valide. Pas de markdown, pas de bloc de code, aucun texte avant ou après. Juste le JSON brut.
-Le champ "visual_clues" est OBLIGATOIRE et doit contenir entre 3 et 5 indices — il ne doit jamais être vide.
-Structure JSON requise :
+Le champ "visual_clues" est OBLIGATOIRE avec 3 à 5 indices — jamais vide.
+
+Structure JSON :
 {
   "country": "nom du pays en français",
-  "city_or_region": "ville ou région la plus probable",
+  "city_or_region": "ville précise ou région si ville impossible",
+  "monument": "nom du monument si reconnu, sinon null",
+  "location_type": "monument" ou "city" ou "region",
   "confidence": "faible" ou "moyen" ou "élevé",
   "visual_clues": ["indice 1", "indice 2", "indice 3"]
 }
-Pour visual_clues, décris ce que tu vois vraiment : style architectural, végétation, langue des panneaux, type de véhicules, qualité de la lumière, vêtements, infrastructure routière, éléments culturels, paysage. Donne toujours au moins 3 indices même si la localisation est inconnue.`;
+
+Pour visual_clues : architecture, végétation, langue des panneaux, véhicules, lumière, vêtements, infrastructure, éléments culturels, monuments visibles, enseignes, drapeaux. Donne toujours au moins 3 indices.`;
 
 export async function POST(request: NextRequest) {
   try {
