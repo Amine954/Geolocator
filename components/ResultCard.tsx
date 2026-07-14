@@ -54,6 +54,24 @@ export default function ResultCard({ result }: { result: GeolocateResult }) {
         </div>
       )}
 
+      {coords && (
+        <div className="p-4 border-t border-zinc-800">
+          <a
+            href={`https://www.google.com/maps?q=${coords.lat},${coords.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Ouvrir dans Google Maps
+          </a>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 divide-x divide-zinc-800">
         <div className="p-4">
           <p className="text-xs text-zinc-500 mb-1">Pays</p>
