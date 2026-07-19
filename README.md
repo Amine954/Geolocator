@@ -16,8 +16,12 @@ Built with Next.js 15, powered by OpenRouter AI vision models. Analyzes any imag
 - **Drag & drop** or click to upload — JPG, PNG, WEBP, GIF
 - **AI-powered analysis** via OpenRouter vision models
 - Returns **country**, **city/region**, **confidence level**, and **visual clues**
+- **Monument recognition** — identifies landmarks (Eiffel Tower, Big Ben…)
 - **Interactive 3D globe** that flies to the detected location
-- **Open in Google Maps** — one click to see the exact spot
+- **Open in Google Maps** — one click to see the exact spot (city/monument only)
+- **Country flag** displayed alongside the result
+- **Progress bar** during analysis
+- **Auto retry** on failure
 - Clean dark UI, no signup required
 
 ---
