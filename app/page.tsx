@@ -41,6 +41,17 @@ export default function Home() {
 
   useEffect(() => () => { if (progressRef.current) clearInterval(progressRef.current); }, []);
 
+  const callApi = async () => {
+    const res = await fetch('/api/geolocate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64, mediaType }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error ?? 'Une erreur est survenue');
+    return data.result;
+  };
+
   const handleAnalyze = async () => {
     if (!imageBase64 || status === 'loading') return;
     setStatus('loading');
@@ -48,24 +59,19 @@ export default function Home() {
     setErrorMsg('');
     startProgress();
     try {
-      const res = await fetch('/api/geolocate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64, mediaType }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        stopProgress(false);
-        setErrorMsg(data.error ?? 'Une erreur est survenue');
-        setStatus('error');
-        return;
+      let result;
+      try {
+        result = await callApi();
+      } catch {
+        await new Promise((r) => setTimeout(r, 1500));
+        result = await callApi();
       }
-      setResult(data.result);
+      setResult(result);
       stopProgress(true);
       setStatus('success');
-    } catch {
+    } catch (err) {
       stopProgress(false);
-      setErrorMsg('Impossible de contacter le serveur.');
+      setErrorMsg(err instanceof Error ? err.message : 'Une erreur est survenue');
       setStatus('error');
     }
   };
