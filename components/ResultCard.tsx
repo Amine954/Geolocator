@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { GeolocateResult } from '@/types';
+import { getFlagUrl } from '@/utils/countryFlag';
 
 const GlobeView = dynamic(() => import('./GlobeView'), { ssr: false });
 
@@ -70,7 +71,19 @@ export default function ResultCard({ result }: { result: GeolocateResult }) {
       <div className="grid grid-cols-2 divide-x divide-zinc-800">
         <div className="p-4">
           <p className="text-xs text-zinc-500 mb-1">Pays</p>
-          <p className="text-white font-semibold text-base">{result.country}</p>
+          <p className="text-white font-semibold text-base flex items-center gap-2">
+            {getFlagUrl(result.country) && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={getFlagUrl(result.country)}
+                alt={result.country}
+                width={24}
+                height={18}
+                className="rounded-sm"
+              />
+            )}
+            {result.country}
+          </p>
         </div>
         <div className="p-4">
           <p className="text-xs text-zinc-500 mb-1">
