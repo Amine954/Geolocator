@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DropZone from '@/components/DropZone';
 import ResultCard from '@/components/ResultCard';
 import { GeolocateResult } from '@/types';
@@ -14,6 +14,8 @@ export default function Home() {
   const [result, setResult] = useState<GeolocateResult | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [progress, setProgress] = useState(0);
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleImageSelect = (base64: string, type: string, prev: string) => {
     setImageBase64(base64);
@@ -24,27 +26,52 @@ export default function Home() {
     setErrorMsg('');
   };
 
+  const startProgress = () => {
+    setProgress(0);
+    progressRef.current = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + Math.random() * 4 : p));
+    }, 300);
+  };
+
+  const stopProgress = (success: boolean) => {
+    if (progressRef.current) clearInterval(progressRef.current);
+    setProgress(success ? 100 : 0);
+    if (success) setTimeout(() => setProgress(0), 600);
+  };
+
+  useEffect(() => () => { if (progressRef.current) clearInterval(progressRef.current); }, []);
+
+  const callApi = async () => {
+    const res = await fetch('/api/geolocate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64, mediaType }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error ?? 'Une erreur est survenue');
+    return data.result;
+  };
+
   const handleAnalyze = async () => {
     if (!imageBase64 || status === 'loading') return;
     setStatus('loading');
     setResult(null);
     setErrorMsg('');
+    startProgress();
     try {
-      const res = await fetch('/api/geolocate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64, mediaType }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        setErrorMsg(data.error ?? 'Une erreur est survenue');
-        setStatus('error');
-        return;
+      let result;
+      try {
+        result = await callApi();
+      } catch {
+        await new Promise((r) => setTimeout(r, 1500));
+        result = await callApi();
       }
-      setResult(data.result);
+      setResult(result);
+      stopProgress(true);
       setStatus('success');
-    } catch {
-      setErrorMsg('Impossible de contacter le serveur.');
+    } catch (err) {
+      stopProgress(false);
+      setErrorMsg(err instanceof Error ? err.message : 'Une erreur est survenue');
       setStatus('error');
     }
   };
@@ -85,6 +112,18 @@ export default function Home() {
             >
               Effacer
             </button>
+          </div>
+        )}
+
+        {status === 'loading' && (
+          <div className="space-y-1.5">
+            <div className="w-full h-px bg-zinc-800 overflow-hidden">
+              <div
+                className="h-full bg-white transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-xs text-zinc-600">{Math.round(progress)}%</p>
           </div>
         )}
 
