@@ -13,7 +13,7 @@ export default function GlobeView({ lat, lng, label }: GlobeViewProps) {
   const mapRef = useRef<{ remove: () => void } | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || mapRef.current) return;
 
     let cancelled = false;
 
@@ -22,22 +22,11 @@ export default function GlobeView({ lat, lng, label }: GlobeViewProps) {
 
       const map = new maplibregl.Map({
         container: containerRef.current,
-        style: {
-          version: 8,
-          sources: {
-            osm: {
-              type: 'raster',
-              tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'],
-              tileSize: 256,
-              attribution: '© OpenStreetMap © CARTO',
-            },
-          },
-          layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
-          glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-        },
-        center: [lng, lat],
-        zoom: 1,
+        style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        center: [0, 20],
+        zoom: 1.5,
         attributionControl: false,
+        projection: { type: 'globe' } as Parameters<typeof maplibregl.Map>[0]['projection'],
       });
 
       mapRef.current = map;
@@ -45,16 +34,31 @@ export default function GlobeView({ lat, lng, label }: GlobeViewProps) {
       map.on('load', () => {
         if (cancelled) return;
 
-        new maplibregl.Marker({ color: '#ffffff' })
+        const el = document.createElement('div');
+        el.style.cssText = `
+          width: 12px;
+          height: 12px;
+          background: white;
+          border-radius: 50%;
+          box-shadow: 0 0 0 3px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.5);
+        `;
+
+        new maplibregl.Marker({ element: el })
           .setLngLat([lng, lat])
+          .setPopup(
+            new maplibregl.Popup({ offset: 16, closeButton: false })
+              .setText(label)
+          )
           .addTo(map);
 
-        map.flyTo({
-          center: [lng, lat],
-          zoom: 5,
-          duration: 2000,
-          essential: true,
-        });
+        setTimeout(() => {
+          map.flyTo({
+            center: [lng, lat],
+            zoom: 5,
+            duration: 2500,
+            essential: true,
+          });
+        }, 700);
       });
     });
 
@@ -66,9 +70,6 @@ export default function GlobeView({ lat, lng, label }: GlobeViewProps) {
   }, [lat, lng, label]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100%', height: '360px' }}
-    />
+    <div ref={containerRef} style={{ width: '100%', height: '380px' }} />
   );
 }
