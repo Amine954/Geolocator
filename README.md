@@ -100,4 +100,3 @@ Open [http://localhost:3000](http://localhost:3000).
 - API key is server-side only — never exposed to the client
 - Images are sent as base64 in the POST body — no file storage
 - Geocoding via OpenStreetMap Nominatim — no API key needed
-
